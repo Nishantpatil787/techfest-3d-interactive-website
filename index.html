@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXUS-7 // Synthetic Neural Interface</title>
+<meta name="description" content="NEXUS-7 cybernetic augmentation platform — merge biological cognition with synthetic processing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#0a0d0f;
+  --panel:#12171a;
+  --panel-2:#171d21;
+  --line:#263036;
+  --steel:#7c9099;
+  --bone:#e8ece9;
+  --copper:#c9713f;
+  --copper-glow:#e08a52;
+  --pulse:#5ee6c8;
+  --danger:#d15b5b;
+  --font-display:'Space Grotesk',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--void);
+  color:var(--bone);
+  font-family:var(--font-display);
+  overflow-x:hidden;
+  line-height:1.5;
+}
+.wrap{max-width:1240px;margin:0 auto;padding:0 32px;}
+a{color:inherit;text-decoration:none;}
+img,svg{display:block;max-width:100%;}
+button{font-family:inherit;cursor:pointer;}
+
+/* ===== Reduced motion ===== */
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important;}
+}
+
+/* ===== Focus ===== */
+a:focus-visible,button:focus-visible,input:focus-visible{
+  outline:2px solid var(--pulse);
+  outline-offset:3px;
+}
+
+/* ===== Background grid texture ===== */
+.grid-bg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size:64px 64px;
+  opacity:0.12;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
+}
+
+/* ===== Nav ===== */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(10,13,15,0.85);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{
+  display:flex;align-items:center;justify-content:space-between;
+  height:72px;
+}
+.logo{
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--font-mono);font-weight:600;font-size:15px;
+  letter-spacing:0.5px;
+}
+.logo-mark{
+  width:28px;height:28px;position:relative;
+  border:1.5px solid var(--copper);border-radius:2px;
+}
+.logo-mark::before{
+  content:'';position:absolute;inset:5px;
+  background:var(--copper);
+  animation:blink 3s ease-in-out infinite;
+}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.25;}}
+.nav-links{display:flex;gap:36px;align-items:center;}
+.nav-links a{
+  font-family:var(--font-mono);font-size:13px;color:var(--steel);
+  letter-spacing:0.3px;transition:color 0.2s;position:relative;
+}
+.nav-links a:hover{color:var(--bone);}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;
+  background:var(--pulse);transition:width 0.25s;
+}
+.nav-links a:hover::after{width:100%;}
+.nav-cta{
+  border:1px solid var(--copper);color:var(--copper-glow);
+  padding:9px 18px;font-family:var(--font-mono);font-size:12.5px;
+  letter-spacing:0.5px;border-radius:2px;transition:all 0.2s;
+  background:transparent;
+}
+.nav-cta:hover{background:var(--copper);color:var(--void);}
+.menu-btn{display:none;background:none;border:none;color:var(--bone);width:32px;height:24px;position:relative;z-index:110;}
+.menu-btn span{
+  position:absolute;left:0;width:100%;height:2px;background:var(--bone);
+  transition:transform 0.3s, opacity 0.3s;
+}
+.menu-btn span:nth-child(1){top:0;}
+.menu-btn span:nth-child(2){top:11px;}
+.menu-btn span:nth-child(3){top:22px;}
+.menu-btn.open span:nth-child(1){transform:translateY(11px) rotate(45deg);}
+.menu-btn.open span:nth-child(2){opacity:0;}
+.menu-btn.open span:nth-child(3){transform:translateY(-11px) rotate(-45deg);}
+
+.mobile-panel{
+  position:fixed;top:72px;left:0;right:0;bottom:0;z-index:99;
+  background:var(--void);
+  transform:translateX(100%);
+  transition:transform 0.35s ease;
+  display:flex;flex-direction:column;
+  padding:40px 32px;gap:28px;
+}
+.mobile-panel.open{transform:translateX(0);}
+.mobile-panel a{font-family:var(--font-mono);font-size:20px;color:var(--bone);}
+.mobile-panel .nav-cta{align-self:flex-start;margin-top:12px;}
+
+/* ===== Hero ===== */
+.hero{
+  position:relative;z-index:1;
+  min-height:100vh;
+  display:flex;align-items:center;
+  padding-top:100px;padding-bottom:60px;
+}
+.hero-inner{
+  display:grid;grid-template-columns:1.1fr 0.9fr;gap:60px;align-items:center;
+  width:100%;
+}
+.eyebrow{
+  font-family:var(--font-mono);font-size:12.5px;color:var(--pulse);
+  letter-spacing:2px;text-transform:uppercase;
+  display:flex;align-items:center;gap:10px;margin-bottom:22px;
+}
+.eyebrow::before{
+  content:'';width:8px;height:8px;background:var(--pulse);border-radius:50%;
+  box-shadow:0 0 10px var(--pulse);
+  animation:pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.8);}}
+.hero h1{
+  font-size:clamp(40px,6vw,72px);
+  font-weight:700;
+  line-height:1.03;
+  letter-spacing:-1.5px;
+  margin-bottom:24px;
+}
+.hero h1 .accent{color:var(--copper-glow);font-style:normal;}
+.hero p.lead{
+  font-size:18px;color:var(--steel);max-width:480px;margin-bottom:36px;
+  line-height:1.65;
+}
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:48px;}
+.btn-primary{
+  background:var(--copper);color:var(--void);
+  padding:15px 30px;font-family:var(--font-mono);font-weight:600;font-size:13.5px;
+  letter-spacing:0.4px;border-radius:2px;border:1px solid var(--copper);
+  transition:all 0.2s;display:inline-flex;align-items:center;gap:8px;
+}
+.btn-primary:hover{background:var(--copper-glow);border-color:var(--copper-glow);transform:translateY(-1px);}
+.btn-ghost{
+  border:1px solid var(--line);color:var(--bone);
+  padding:15px 30px;font-family:var(--font-mono);font-size:13.5px;letter-spacing:0.4px;
+  border-radius:2px;transition:all 0.2s;
+}
+.btn-ghost:hover{border-color:var(--steel);background:var(--panel);}
+.hero-meta{
+  display:flex;gap:40px;font-family:var(--font-mono);
+  border-top:1px solid var(--line);padding-top:24px;
+}
+.hero-meta div{display:flex;flex-direction:column;gap:4px;}
+.hero-meta .num{font-size:22px;font-weight:600;color:var(--bone);}
+.hero-meta .lbl{font-size:11px;color:var(--steel);letter-spacing:0.5px;}
+
+/* Signature interactive HUD */
+.hud{
+  position:relative;aspect-ratio:1/1;max-width:460px;margin:0 auto;
+  border:1px solid var(--line);border-radius:4px;
+  background:radial-gradient(circle at 50% 45%, rgba(94,230,200,0.06), transparent 65%);
+}
+.hud-corner{position:absolute;width:18px;height:18px;border:1.5px solid var(--copper);}
+.hud-corner.tl{top:-1px;left:-1px;border-right:none;border-bottom:none;}
+.hud-corner.tr{top:-1px;right:-1px;border-left:none;border-bottom:none;}
+.hud-corner.bl{bottom:-1px;left:-1px;border-right:none;border-top:none;}
+.hud-corner.br{bottom:-1px;right:-1px;border-left:none;border-top:none;}
+.hud svg{width:100%;height:100%;}
+.hud-label{
+  position:absolute;font-family:var(--font-mono);font-size:10.5px;color:var(--steel);
+  letter-spacing:0.5px;
+}
+.hud-label.top{top:16px;left:20px;}
+.hud-label.bottom{bottom:16px;right:20px;text-align:right;}
+.hud-label .v{color:var(--pulse);}
+
+/* ===== Section shared ===== */
+section{position:relative;z-index:1;padding:120px 0;}
+.section-head{max-width:640px;margin-bottom:64px;}
+.section-tag{
+  font-family:var(--font-mono);font-size:12px;color:var(--copper-glow);
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;display:block;
+}
+.section-head h2{
+  font-size:clamp(30px,4vw,44px);font-weight:700;letter-spacing:-1px;line-height:1.1;
+}
+.section-head p{color:var(--steel);margin-top:16px;font-size:16.5px;max-width:560px;}
+
+/* ===== Features ===== */
+.feat-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--line);border:1px solid var(--line);
+}
+.feat-card{
+  background:var(--void);padding:38px 32px;transition:background 0.25s;
+}
+.feat-card:hover{background:var(--panel);}
+.feat-idx{font-family:var(--font-mono);font-size:12px;color:var(--copper-glow);margin-bottom:20px;}
+.feat-icon{width:38px;height:38px;margin-bottom:22px;color:var(--pulse);}
+.feat-card h3{font-size:19px;font-weight:600;margin-bottom:10px;letter-spacing:-0.2px;}
+.feat-card p{color:var(--steel);font-size:14.5px;line-height:1.6;}
+
+/* ===== Interface / interactive panel ===== */
+.interface-section{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.iface-grid{display:grid;grid-template-columns:0.9fr 1.1fr;gap:64px;align-items:center;}
+.dial-row{display:flex;flex-direction:column;gap:22px;margin-top:36px;}
+.dial{display:flex;align-items:center;gap:16px;}
+.dial-label{font-family:var(--font-mono);font-size:12px;color:var(--steel);width:130px;letter-spacing:0.3px;}
+.dial-track{flex:1;height:6px;background:var(--void);border-radius:3px;overflow:hidden;border:1px solid var(--line);}
+.dial-fill{height:100%;background:linear-gradient(90deg,var(--copper),var(--pulse));border-radius:3px;transition:width 1.2s cubic-bezier(.2,.8,.2,1);width:0%;}
+.dial-val{font-family:var(--font-mono);font-size:12px;color:var(--bone);width:42px;text-align:right;}
+.console{
+  background:var(--void);border:1px solid var(--line);border-radius:4px;padding:24px;
+  font-family:var(--font-mono);font-size:13px;color:var(--steel);
+  height:340px;overflow:hidden;position:relative;
+}
+.console-head{display:flex;justify-content:space-between;margin-bottom:16px;color:var(--pulse);font-size:11px;letter-spacing:1px;}
+.console-line{margin-bottom:8px;opacity:0;animation:type-in 0.4s forwards;}
+.console-line .ok{color:var(--pulse);}
+.console-line .tag{color:var(--copper-glow);}
+@keyframes type-in{to{opacity:1;}}
+
+/* ===== Stats ===== */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+.stat-card{background:var(--void);padding:40px 28px;text-align:left;}
+.stat-num{font-family:var(--font-mono);font-size:clamp(32px,4vw,46px);font-weight:600;color:var(--bone);letter-spacing:-1px;}
+.stat-num .unit{font-size:0.5em;color:var(--copper-glow);margin-left:4px;}
+.stat-lbl{color:var(--steel);font-size:13.5px;margin-top:10px;letter-spacing:0.2px;}
+
+/* ===== Timeline ===== */
+.timeline{position:relative;padding-left:0;}
+.tl-line{
+  position:absolute;left:calc(140px + 20px);top:0;bottom:0;width:1px;background:var(--line);
+}
+.tl-item{
+  display:grid;grid-template-columns:140px 40px 1fr;gap:0;padding:36px 0;border-top:1px solid var(--line);
+}
+.tl-item:last-child{border-bottom:1px solid var(--line);}
+.tl-phase{font-family:var(--font-mono);font-size:13px;color:var(--copper-glow);letter-spacing:0.5px;padding-top:2px;}
+.tl-dot-col{display:flex;justify-content:center;}
+.tl-dot{width:11px;height:11px;border-radius:50%;background:var(--void);border:2px solid var(--pulse);margin-top:6px;}
+.tl-content h3{font-size:19px;font-weight:600;margin-bottom:8px;}
+.tl-content p{color:var(--steel);font-size:14.5px;max-width:560px;}
+
+/* ===== CTA ===== */
+.cta-section{
+  background:linear-gradient(180deg,var(--panel),var(--void));
+  border-top:1px solid var(--line);
+  text-align:center;
+}
+.cta-section .wrap{max-width:720px;}
+.cta-section h2{font-size:clamp(32px,5vw,52px);font-weight:700;letter-spacing:-1.2px;margin-bottom:20px;}
+.cta-section p{color:var(--steel);font-size:17px;margin-bottom:40px;}
+.cta-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.cta-note{margin-top:24px;font-family:var(--font-mono);font-size:12px;color:var(--steel);letter-spacing:0.3px;}
+
+/* ===== Footer ===== */
+footer{border-top:1px solid var(--line);padding:64px 0 32px;}
+.footer-grid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:40px;margin-bottom:56px;}
+.footer-brand p{color:var(--steel);font-size:14px;margin-top:16px;max-width:280px;line-height:1.6;}
+.footer-col h4{font-family:var(--font-mono);font-size:12px;letter-spacing:1px;color:var(--steel);margin-bottom:18px;text-transform:uppercase;}
+.footer-col a{display:block;color:var(--bone);font-size:14.5px;margin-bottom:12px;opacity:0.85;transition:opacity 0.2s;}
+.footer-col a:hover{opacity:1;color:var(--pulse);}
+.footer-bottom{
+  display:flex;justify-content:space-between;align-items:center;
+  border-top:1px solid var(--line);padding-top:28px;
+  font-family:var(--font-mono);font-size:12px;color:var(--steel);flex-wrap:wrap;gap:12px;
+}
+
+/* ===== Reveal on scroll ===== */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal.in{opacity:1;transform:translateY(0);}
+
+/* ===== Responsive ===== */
+@media (max-width:980px){
+  .hero-inner{grid-template-columns:1fr;}
+  .hud{order:-1;max-width:340px;}
+  .feat-grid{grid-template-columns:repeat(2,1fr);}
+  .iface-grid{grid-template-columns:1fr;gap:48px;}
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .nav-links{display:none;}
+  .menu-btn{display:block;}
+}
+@media (max-width:600px){
+  .wrap{padding:0 20px;}
+  .feat-grid{grid-template-columns:1fr;}
+  .stats-grid{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr;gap:32px;}
+  .tl-item{grid-template-columns:32px 1fr;}
+  .tl-phase{grid-column:1/3;padding-top:0;margin-bottom:8px;}
+  .tl-dot-col{align-items:flex-start;}
+  .hero-meta{gap:24px;flex-wrap:wrap;}
+  .hero-actions{flex-direction:column;}
+  .btn-primary,.btn-ghost{justify-content:center;width:100%;}
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg" aria-hidden="true"></div>
+
+<nav class="nav">
+  <div class="wrap nav-inner">
+    <a href="#top" class="logo"><span class="logo-mark" aria-hidden="true"></span>NEXUS-7</a>
+    <div class="nav-links">
+      <a href="#features">Systems</a>
+      <a href="#interface">Interface</a>
+      <a href="#stats">Metrics</a>
+      <a href="#timeline">Rollout</a>
+      <a href="#cta" class="nav-cta">Request Access</a>
+    </div>
+    <button class="menu-btn" id="menuBtn" aria-label="Toggle menu" aria-expanded="false" aria-controls="mobilePanel">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<div class="mobile-panel" id="mobilePanel">
+  <a href="#features">Systems</a>
+  <a href="#interface">Interface</a>
+  <a href="#stats">Metrics</a>
+  <a href="#timeline">Rollout</a>
+  <a href="#cta" class="nav-cta">Request Access</a>
+</div>
+
+<main id="top">
+
+<section class="hero">
+  <div class="wrap hero-inner">
+    <div>
+      <span class="eyebrow">Neural-Synthetic Integration · Live</span>
+      <h1>Your mind, <span class="accent">extended</span> into silicon.</h1>
+      <p class="lead">NEXUS-7 is a cortical interface platform that lets biological cognition delegate to synthetic processing — in real time, with zero perceptible latency.</p>
+      <div class="hero-actions">
+        <a href="#cta" class="btn-primary">Request Access →</a>
+        <a href="#interface" class="btn-ghost">See the Interface</a>
+      </div>
+      <div class="hero-meta">
+        <div><span class="num">0.3ms</span><span class="lbl">SIGNAL LATENCY</span></div>
+        <div><span class="num">128</span><span class="lbl">NEURAL CHANNELS</span></div>
+        <div><span class="num">99.98%</span><span class="lbl">UPTIME</span></div>
+      </div>
+    </div>
+
+    <div class="hud" id="hud" role="img" aria-label="Animated diagram of a cybernetic node network representing the neural interface">
+      <span class="hud-corner tl"></span><span class="hud-corner tr"></span>
+      <span class="hud-corner bl"></span><span class="hud-corner br"></span>
+      <span class="hud-label top">NODE_MAP <span class="v" id="nodeCount">— </span></span>
+      <span class="hud-label bottom">SYNC <span class="v">STABLE</span></span>
+      <svg viewBox="0 0 460 460" aria-hidden="true">
+        <circle cx="230" cy="230" r="150" fill="none" stroke="#263036" stroke-width="1"/>
+        <circle cx="230" cy="230" r="100" fill="none" stroke="#263036" stroke-width="1"/>
+        <g id="hudLines" stroke="#c9713f" stroke-width="1" opacity="0.5"></g>
+        <g id="hudNodes"></g>
+        <circle cx="230" cy="230" r="6" fill="#5ee6c8">
+          <animate attributeName="r" values="6;9;6" dur="2.4s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-tag">Core Systems</span>
+      <h2>Four subsystems. One nervous system.</h2>
+      <p>Every module is independently addressable and can be disabled without degrading the others — modularity is a safety requirement, not a feature.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card reveal">
+        <div class="feat-idx">SYS.01</div>
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="3"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8"/></svg>
+        <h3>Cortical Relay</h3>
+        <p>Bidirectional signal translation between electrochemical impulse and digital instruction set, tuned per user over the first 72 hours.</p>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-idx">SYS.02</div>
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg>
+        <h3>Adaptive Memory Cache</h3>
+        <p>Frequently accessed recall is mirrored to local synthetic storage, cutting retrieval effort for practiced skills and routines.</p>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-idx">SYS.03</div>
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 2v20M4 8l8-6 8 6M4 16l8 6 8-6"/></svg>
+        <h3>Failsafe Isolation</h3>
+        <p>Any subsystem can be hard-cut from the host in under 4ms if telemetry falls outside safe operating bounds.</p>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-idx">SYS.04</div>
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
+        <h3>Live Vitals Stream</h3>
+        <p>Continuous biometric monitoring feeds a private dashboard — nothing leaves the device without explicit, revocable consent.</p>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-idx">SYS.05</div>
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 2a5 5 0 015 5v3a5 5 0 01-10 0V7a5 5 0 015-5z"/><path d="M8 14v2a4 4 0 008 0v-2M12 20v2"/></svg>
+        <h3>Sensory Overlay</h3>
+        <p>Optional augmentation layer for spatial audio cues and peripheral-vision alerts, dimmable to zero at any time.</p>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-idx">SYS.06</div>
+        <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="11" width="18" height="10" rx="1"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        <h3>Encrypted Enclave</h3>
+        <p>All neural data is processed on-device inside a hardware enclave; keys never leave the implant.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="interface" class="interface-section">
+  <div class="wrap">
+    <div class="iface-grid">
+      <div class="reveal">
+        <span class="section-tag">Interactive Interface</span>
+        <h2>Calibrate before you connect.</h2>
+        <p style="color:var(--steel);margin-top:16px;font-size:15.5px;">Drag isn't required — every implant ships pre-tuned. This is a live preview of the calibration panel operators use during onboarding.</p>
+        <div class="dial-row">
+          <div class="dial">
+            <span class="dial-label">SIGNAL GAIN</span>
+            <div class="dial-track"><div class="dial-fill" data-target="82"></div></div>
+            <span class="dial-val">82%</span>
+          </div>
+          <div class="dial">
+            <span class="dial-label">NOISE FLOOR</span>
+            <div class="dial-track"><div class="dial-fill" data-target="14"></div></div>
+            <span class="dial-val">14%</span>
+          </div>
+          <div class="dial">
+            <span class="dial-label">SYNC INTEGRITY</span>
+            <div class="dial-track"><div class="dial-fill" data-target="97"></div></div>
+            <span class="dial-val">97%</span>
+          </div>
+          <div class="dial">
+            <span class="dial-label">THERMAL LOAD</span>
+            <div class="dial-track"><div class="dial-fill" data-target="31"></div></div>
+            <span class="dial-val">31%</span>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="console" id="console" aria-label="Simulated boot console log" role="status">
+          <div class="console-head"><span>BOOT_SEQUENCE.LOG</span><span id="clock">00:00:00</span></div>
+          <div id="consoleLines"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="stats">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-tag">Field Metrics</span>
+      <h2>Numbers from three years of trials.</h2>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card reveal"><div class="stat-num">4,812</div><div class="stat-lbl">Active integrations worldwide</div></div>
+      <div class="stat-card reveal"><div class="stat-num">0.3<span class="unit">ms</span></div><div class="stat-lbl">Median signal round-trip</div></div>
+      <div class="stat-card reveal"><div class="stat-num">97.4<span class="unit">%</span></div><div class="stat-lbl">Calibration success, first attempt</div></div>
+      <div class="stat-card reveal"><div class="stat-num">11<span class="unit">yr</span></div><div class="stat-lbl">Longest continuous implant run</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="timeline">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="section-tag">Integration Path</span>
+      <h2>From consult to full sync.</h2>
+      <p>A typed sequence — each phase gates the next, and every user moves through the same order.</p>
+    </div>
+    <div class="timeline reveal">
+      <div class="tl-item">
+        <span class="tl-phase">PHASE 00</span>
+        <span class="tl-dot-col"><span class="tl-dot"></span></span>
+        <div class="tl-content"><h3>Neurological Baseline</h3><p>Full imaging and signal-mapping session establishes your baseline cortical profile before any hardware is proposed.</p></div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-phase">PHASE 01</span>
+        <span class="tl-dot-col"><span class="tl-dot"></span></span>
+        <div class="tl-content"><h3>Implant Fabrication</h3><p>Electrode array is fabricated to your baseline map — no two arrays are identical.</p></div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-phase">PHASE 02</span>
+        <span class="tl-dot-col"><span class="tl-dot"></span></span>
+        <div class="tl-content"><h3>Surgical Placement</h3><p>Outpatient procedure under local anesthesia; average placement time is 94 minutes.</p></div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-phase">PHASE 03</span>
+        <span class="tl-dot-col"><span class="tl-dot"></span></span>
+        <div class="tl-content"><h3>Calibration Window</h3><p>72-hour supervised tuning period where gain, noise floor, and sync integrity are hand-tuned per user.</p></div>
+      </div>
+      <div class="tl-item">
+        <span class="tl-phase">PHASE 04</span>
+        <span class="tl-dot-col"><span class="tl-dot"></span></span>
+        <div class="tl-content"><h3>Full Autonomy</h3><p>Interface hands full control back to you, with failsafe isolation active for life.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="cta" class="cta-section">
+  <div class="wrap">
+    <h2 class="reveal">Ready to extend your mind?</h2>
+    <p class="reveal">Access is limited to 40 new integrations per quarter while trial data is reviewed.</p>
+    <div class="cta-actions reveal">
+      <a href="#top" class="btn-primary">Request Access →</a>
+      <a href="#top" class="btn-ghost">Book a Consult</a>
+    </div>
+    <p class="cta-note">No obligation. Full neurological screening included.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#top" class="logo"><span class="logo-mark" aria-hidden="true"></span>NEXUS-7</a>
+        <p>Cortical interface platform for synthetic-biological cognition, built and tested under independent neurological review.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <a href="#features">Systems</a>
+        <a href="#interface">Interface</a>
+        <a href="#stats">Metrics</a>
+      </div>
+      <div class="footer-col">
+        <h4>Program</h4>
+        <a href="#timeline">Rollout</a>
+        <a href="#cta">Access</a>
+        <a href="#top">Consult</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="#top">Safety Data</a>
+        <a href="#top">Privacy</a>
+        <a href="#top">Terms</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 NEXUS-7 Neural Systems. All rights reserved.</span>
+      <span>BUILD 7.4.1 · STATUS: OPERATIONAL</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Mobile nav
+const menuBtn = document.getElementById('menuBtn');
+const mobilePanel = document.getElementById('mobilePanel');
+menuBtn.addEventListener('click', () => {
+  const open = mobilePanel.classList.toggle('open');
+  menuBtn.classList.toggle('open', open);
+  menuBtn.setAttribute('aria-expanded', open);
+});
+mobilePanel.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  mobilePanel.classList.remove('open');
+  menuBtn.classList.remove('open');
+  menuBtn.setAttribute('aria-expanded', false);
+}));
+
+// Reveal on scroll
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: 0.15 });
+revealEls.forEach(el => io.observe(el));
+
+// Dial fill animation on reveal
+const dials = document.querySelectorAll('.dial-fill');
+const dialIO = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.width = e.target.dataset.target + '%';
+      dialIO.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.4 });
+dials.forEach(d => dialIO.observe(d));
+
+// HUD node network (procedural, deterministic)
+(function(){
+  const nodesG = document.getElementById('hudNodes');
+  const linesG = document.getElementById('hudLines');
+  const cx = 230, cy = 230, n = 9;
+  const pts = [];
+  for (let i = 0; i < n; i++) {
+    const r = 100 + (i % 3) * 20;
+    const a = (i / n) * Math.PI * 2;
+    const x = cx + Math.cos(a) * r;
+    const y = cy + Math.sin(a) * r;
+    pts.push([x, y]);
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx', x); c.setAttribute('cy', y); c.setAttribute('r', 3.5);
+    c.setAttribute('fill', '#e08a52');
+    const anim = document.createElementNS('http://www.w3.org/2000/svg','animate');
+    anim.setAttribute('attributeName','opacity');
+    anim.setAttribute('values','0.4;1;0.4');
+    anim.setAttribute('dur', (2 + (i % 4)) + 's');
+    anim.setAttribute('repeatCount','indefinite');
+    c.appendChild(anim);
+    nodesG.appendChild(c);
+  }
+  pts.forEach((p, i) => {
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', cx); line.setAttribute('y1', cy);
+    line.setAttribute('x2', p[0]); line.setAttribute('y2', p[1]);
+    linesG.appendChild(line);
+  });
+  document.getElementById('nodeCount').textContent = n + ' ACTIVE';
+})();
+
+// Console boot log
+const lines = [
+  'INIT bootloader v7.4.1',
+  'CHECK hardware enclave ... <span class="ok">OK</span>',
+  'MOUNT cortical relay <span class="tag">[SYS.01]</span>',
+  'CHECK memory cache ... <span class="ok">OK</span>',
+  'HANDSHAKE failsafe isolation <span class="tag">[SYS.03]</span>',
+  'CALIBRATE signal gain ... 82%',
+  'CALIBRATE noise floor ... 14%',
+  'VERIFY sync integrity ... 97%',
+  'STATUS all systems <span class="ok">NOMINAL</span>',
+  'READY for interface handshake_'
+];
+const consoleEl = document.getElementById('consoleLines');
+const consoleWrap = document.getElementById('console');
+let started = false;
+const consoleIO = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting && !started) {
+      started = true;
+      lines.forEach((l, i) => {
+        setTimeout(() => {
+          const div = document.createElement('div');
+          div.className = 'console-line';
+          div.innerHTML = '<span style="color:var(--steel)">&gt;</span> ' + l;
+          consoleEl.appendChild(div);
+        }, i * 380);
+      });
+      consoleIO.unobserve(consoleWrap);
+    }
+  });
+}, { threshold: 0.3 });
+consoleIO.observe(consoleWrap);
+
+// Fake clock
+const clockEl = document.getElementById('clock');
+let secs = 0;
+setInterval(() => {
+  secs++;
+  const h = String(Math.floor(secs/3600)).padStart(2,'0');
+  const m = String(Math.floor((secs%3600)/60)).padStart(2,'0');
+  const s = String(secs%60).padStart(2,'0');
+  clockEl.textContent = `${h}:${m}:${s}`;
+}, 1000);
+</script>
+</body>
+</html>
